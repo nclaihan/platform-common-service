@@ -1,12 +1,7 @@
-
 *.class
-
 *.log
-
 *.ctxt
-
 .mtj.tmp/
-
 *.jar
 *.war
 *.ear
@@ -17,3 +12,4 @@ hs_err_pid*
 target/
 .project
 .settings/
+.classpath

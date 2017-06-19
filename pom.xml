@@ -24,19 +24,152 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version>1.8</java-version>
 	</properties>
-	<build>  
-		<plugins>  
-			<plugin>  
-				<groupId>org.apache.maven.plugins</groupId>  
-				<artifactId>maven-compiler-plugin</artifactId>  
-				<configuration>  
-					<source>${java-version}</source>  
-					<target>${java-version}</target>  
-					<encoding>${project.build.sourceEncoding}</encoding> 
-				</configuration>  
-			</plugin>  
-		</plugins>  
-	</build>  
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>1.4.7.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/${project.artifactId}/libs</outputDirectory>
+					<archive>
+						<manifest>
+							<mainClass>com.laihan.SpringBootRunner</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/${project.artifactId}/libs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<mkdir dir="${project.build.directory}/${project.artifactId}/bin/" />
+								<mkdir dir="${project.build.directory}/${project.artifactId}/logs/" />
+								<echo
+									file="${project.build.directory}/${project.artifactId}/bin/${project.artifactId}.sh"
+									append="false">
+<![CDATA[ 
+#!/bin/bash
+WORK_DIR=$(cd `dirname $0`; pwd);
+function findJAVA(){
+	if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
+	    JAVAEXE="$JAVA_HOME/bin/java"
+	elif type -p java > /dev/null 2>&1; then
+	    JAVAEXE=$(type -p java)
+	elif [[ -x "/usr/bin/java" ]];  then
+	    JAVAEXE="/usr/bin/java"
+	else
+	    echo "Unable to find Java"
+	    exit 1
+	fi
+}
+# Find Java
+findJAVA
+echo "##"
+echo "#SHELL_DIR  ${WORK_DIR}"
+echo "#JAVAEXE    ${JAVAEXE}"
+echo "##"
+
+# Call the appropriate action function
+case "$1" in
+	start)
+		exit 0;
+	stop)
+		exit 0;
+	restart)
+		exit 0;
+	status)
+		exit 0;
+	version)
+		echo "Platform Version : ${project.version}"
+		exit 0;
+	*)
+	  echo "Usage: $0 {start|stop|restart|status}"; exit 1;
+esac
+exit 0
+]]>
+								</echo>
+								<tar destfile="${project.build.directory}/${project.artifactId}.tar">
+									<tarfileset dir="${project.build.directory}/${project.artifactId}"
+										prefix="${project.artifactId}" excludes="*.sh">
+									</tarfileset>
+									<tarfileset dir="${project.build.directory}/${project.artifactId}"
+										filemode="555" prefix="${project.artifactId}">
+										<include name="*.sh" />
+									</tarfileset>
+								</tar>
+								<gzip src="${project.build.directory}/${project.artifactId}.tar"
+									destfile="${project.build.directory}/${project.artifactId}.tar.gz" />
+								<delete file="${project.build.directory}/${project.artifactId}.tar" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 
 </project>
