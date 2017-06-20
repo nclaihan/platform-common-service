@@ -23,6 +23,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version>1.8</java-version>
+		<hawtbuf.version>1.11</hawtbuf.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -37,6 +38,27 @@
 	</dependencyManagement>
 	<dependencies>
 		<dependency>
+			<groupId>org.fusesource.hawtbuf</groupId>
+			<artifactId>hawtbuf</artifactId>
+			<version>${hawtbuf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-kahadb-store</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-openwire-legacy</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
@@ -49,6 +71,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>3.3.7-1</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -68,7 +95,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.0.2</version>
 				<configuration>
-					<outputDirectory>${project.build.directory}/${project.artifactId}/libs</outputDirectory>
+					<outputDirectory>${project.build.directory}/${project.artifactId}/</outputDirectory>
 					<archive>
 						<manifest>
 							<mainClass>com.laihan.SpringBootRunner</mainClass>
@@ -105,10 +132,9 @@
 						</goals>
 						<configuration>
 							<tasks>
-								<mkdir dir="${project.build.directory}/${project.artifactId}/bin/" />
 								<mkdir dir="${project.build.directory}/${project.artifactId}/logs/" />
 								<echo
-									file="${project.build.directory}/${project.artifactId}/bin/${project.artifactId}.sh"
+									file="${project.build.directory}/${project.artifactId}/${project.artifactId}.sh"
 									append="false">
 <![CDATA[ 
 #!/bin/bash

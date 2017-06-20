@@ -13,3 +13,7 @@ target/
 .project
 .settings/
 .classpath
+store/*
+*.data
+*.redo
+lock
